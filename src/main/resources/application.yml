@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: chess
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/chess}

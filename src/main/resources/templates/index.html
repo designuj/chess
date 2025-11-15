@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess - Game Lobby</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #fff;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .player-input-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #4caf50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .games-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .games-section h2 {
+            color: #495057;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .refresh-btn {
+            background: #e9ecef;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background: #dee2e6;
+        }
+
+        .game-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .game-item {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .game-item:hover {
+            border-color: #4caf50;
+            background: #f1f8f1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.15);
+        }
+
+        .game-info {
+            flex: 1;
+        }
+
+        .game-id {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #4caf50;
+            margin-bottom: 8px;
+            font-family: monospace;
+        }
+
+        .game-players {
+            color: #6c757d;
+            font-size: 0.95em;
+        }
+
+        .game-players span {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .game-status {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .game-status.waiting {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .game-status.in-progress {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state-text {
+            font-size: 1.1em;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-icon {
+            font-size: 40px;
+            margin-right: 15px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .modal-message {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .modal-button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .modal-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>♟️ Chess</h1>
+            <p>Welcome to the Chess Lobby</p>
+        </div>
+
+        <div class="player-input-section">
+            <div class="input-group">
+                <label for="playerName">Your Name</label>
+                <input type="text" id="playerName" placeholder="Enter your name" maxlength="20">
+            </div>
+            <button class="btn btn-primary" onclick="createNewGame()">Create New Game</button>
+        </div>
+
+        <div class="games-section">
+            <h2>
+                Active Games
+                <button class="refresh-btn" onclick="loadGames()">🔄 Refresh</button>
+            </h2>
+            <div class="game-list" id="gameList">
+                <div class="empty-state">
+                    <div class="empty-state-icon">♟️</div>
+                    <div class="empty-state-text">Loading games...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal" id="errorModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon">⚠️</div>
+                <div class="modal-title" id="modalTitle">Error</div>
+            </div>
+            <div class="modal-message" id="modalMessage"></div>
+            <button class="modal-button" onclick="closeModal()">OK</button>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_EXPIRY_DAYS = 30;
+
+        function generatePlayerId() {
+            return 'player_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        }
+
+        function setWithExpiry(key, value) {
+            const now = new Date();
+            const item = {
+                value: value,
+                expiry: now.getTime() + (STORAGE_EXPIRY_DAYS * 24 * 60 * 60 * 1000)
+            };
+            localStorage.setItem(key, JSON.stringify(item));
+        }
+
+        function getWithExpiry(key) {
+            const itemStr = localStorage.getItem(key);
+            if (!itemStr) return null;
+
+            try {
+                const item = JSON.parse(itemStr);
+                const now = new Date();
+
+                if (now.getTime() > item.expiry) {
+                    localStorage.removeItem(key);
+                    return null;
+                }
+                return item.value;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function initializePlayer() {
+            let playerId = getWithExpiry('playerId');
+            let playerName = getWithExpiry('playerName');
+
+            const nameInput = document.getElementById('playerName');
+
+            if (playerName) {
+                nameInput.value = playerName;
+            }
+
+            // If no playerId exists, generate one when user enters name
+            nameInput.addEventListener('input', function() {
+                const name = this.value.trim();
+                if (name && !playerId) {
+                    playerId = generatePlayerId();
+                    setWithExpiry('playerId', playerId);
+                }
+                if (name) {
+                    setWithExpiry('playerName', name);
+                }
+            });
+        }
+
+        function getCurrentPlayer() {
+            return {
+                playerId: getWithExpiry('playerId'),
+                playerName: getWithExpiry('playerName')
+            };
+        }
+
+        function showModal(title, message) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('errorModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('errorModal').classList.remove('show');
+        }
+
+        async function createNewGame() {
+            const player = getCurrentPlayer();
+
+            if (!player.playerName) {
+                showModal('Missing Information', 'Please enter your name to create a game.');
+                return;
+            }
+
+            if (!player.playerId) {
+                player.playerId = generatePlayerId();
+                setWithExpiry('playerId', player.playerId);
+            }
+
+            try {
+                const response = await fetch('/api/games', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ playerId: player.playerId, playerName: player.playerName })
+                });
+
+                if (response.ok) {
+                    const game = await response.json();
+                    window.location.href = `/game/${game.id}`;
+                } else {
+                    const error = await response.json();
+                    showModal('Cannot Create Game', error.error || 'Failed to create game');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showModal('Connection Error', 'Failed to connect to the server. Please try again.');
+            }
+        }
+
+        async function joinGame(gameId) {
+            const player = getCurrentPlayer();
+
+            if (!player.playerName) {
+                showModal('Missing Information', 'Please enter your name to join a game.');
+                return;
+            }
+
+            if (!player.playerId) {
+                player.playerId = generatePlayerId();
+                setWithExpiry('playerId', player.playerId);
+            }
+
+            try {
+                const response = await fetch(`/api/games/${gameId}/join`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ playerId: player.playerId, playerName: player.playerName })
+                });
+
+                if (response.ok) {
+                    window.location.href = `/game/${gameId}`;
+                } else {
+                    const error = await response.json();
+                    showModal('Cannot Join Game', error.error || 'Failed to join game');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showModal('Connection Error', 'Failed to connect to the server. Please try again.');
+            }
+        }
+
+        async function viewGame(gameId) {
+            // Just navigate to the game - rejoin logic will be handled on game page
+            window.location.href = `/game/${gameId}`;
+        }
+
+        async function loadGames() {
+            try {
+                const response = await fetch('/api/games');
+                const allGames = await response.json();
+                const player = getCurrentPlayer();
+
+                // Filter games: show only games waiting for players OR games where current user is playing
+                const filteredGames = allGames.filter(game => {
+                    // Always show games waiting for a second player
+                    if (game.status === 'WAITING') return true;
+
+                    // For in-progress games, only show if current user is one of the players
+                    if (game.status === 'IN_PROGRESS' && player.playerId) {
+                        return game.whitePlayerId === player.playerId || game.blackPlayerId === player.playerId;
+                    }
+
+                    return false;
+                });
+
+                const gameList = document.getElementById('gameList');
+
+                if (filteredGames.length === 0) {
+                    gameList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">♟️</div>
+                            <div class="empty-state-text">No active games. Create one to start playing!</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                gameList.innerHTML = filteredGames.map(game => {
+                    const clickAction = game.status === 'WAITING' ?
+                        `joinGame('${game.id}')` :
+                        `viewGame('${game.id}')`;
+
+                    return `
+                        <div class="game-item" onclick="${clickAction}">
+                            <div class="game-info">
+                                <div class="game-id">${game.id}</div>
+                                <div class="game-players">
+                                    <span>${game.whitePlayerName || 'Player 1'}</span>
+                                    ${game.blackPlayerName ? ` vs <span>${game.blackPlayerName}</span>` : ' is waiting for opponent'}
+                                </div>
+                            </div>
+                            <div class="game-status ${game.status.toLowerCase().replace('_', '-')}">
+                                ${game.status === 'WAITING' ? 'Waiting' : 'In Progress'}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading games:', error);
+                document.getElementById('gameList').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <div class="empty-state-text">Failed to load games. Please refresh the page.</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize player on page load
+        initializePlayer();
+
+        // Load games on page load
+        loadGames();
+
+        // Auto-refresh every 5 seconds
+        setInterval(loadGames, 5000);
+
+        // Close modal on background click
+        document.getElementById('errorModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Auto-cleanup completed games
+        setInterval(async () => {
+            try {
+                await fetch('/api/games/cleanup', { method: 'POST' });
+            } catch (error) {
+                console.error('Cleanup error:', error);
+            }
+        }, 30000); // Every 30 seconds
+    </script>
+</body>
+</html>
