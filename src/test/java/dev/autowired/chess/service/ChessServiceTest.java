@@ -89,7 +89,7 @@ class ChessServiceTest {
         StepVerifier.create(chessService.joinGame(GAME_ID, WHITE_PLAYER, "Player1"))
                 .expectErrorMatches(throwable ->
                     throwable instanceof IllegalStateException &&
-                    throwable.getMessage().contains("already in this game"))
+                    throwable.getMessage().contains("cannot join your own game"))
                 .verify();
     }
 

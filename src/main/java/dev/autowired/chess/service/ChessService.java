@@ -17,26 +17,56 @@ public class ChessService {
     private static final int MAX_ACTIVE_GAMES = 10;
 
     public Mono<Game> createGame(String playerId, String playerName) {
-        return getActiveGamesCount()
-                .flatMap(count -> {
-                    if (count >= MAX_ACTIVE_GAMES) {
-                        return Mono.error(new IllegalStateException("Maximum number of active games reached"));
-                    }
-                    Game game = new Game(playerId, playerName);
-                    return gameRepository.save(game);
-                });
+        // Check if player already has an active game
+        return getActiveGameForPlayer(playerId)
+                .flatMap(existingGame -> {
+                    // If player has an active game, return it instead of creating new one
+                    return Mono.just(existingGame);
+                })
+                .switchIfEmpty(
+                    // No active game, create new one
+                    getActiveGamesCount()
+                            .flatMap(count -> {
+                                if (count >= MAX_ACTIVE_GAMES) {
+                                    return Mono.error(new IllegalStateException("Maximum number of active games reached"));
+                                }
+                                Game game = new Game(playerId, playerName);
+                                return gameRepository.save(game);
+                            })
+                );
+    }
+
+    public Mono<Game> getActiveGameForPlayer(String playerId) {
+        if (playerId == null) {
+            return Mono.empty();
+        }
+
+        return gameRepository.findAll()
+                .filter(game -> (game.getStatus() == GameStatus.WAITING || game.getStatus() == GameStatus.IN_PROGRESS))
+                .filter(game -> playerId.equals(game.getWhitePlayerId()) || playerId.equals(game.getBlackPlayerId()))
+                .next(); // Get first match
     }
 
     public Mono<Game> joinGame(String gameId, String playerId, String playerName) {
         return gameRepository.findById(gameId)
                 .switchIfEmpty(Mono.error(new IllegalStateException("Game not found")))
                 .flatMap(game -> {
+                    // Check if game is in WAITING status
                     if (game.getStatus() != GameStatus.WAITING) {
                         return Mono.error(new IllegalStateException("Game is not accepting players"));
                     }
-                    if (game.getWhitePlayerId().equals(playerId)) {
-                        return Mono.error(new IllegalStateException("You are already in this game"));
+
+                    // Check if player is trying to join their own game
+                    if (playerId != null && playerId.equals(game.getWhitePlayerId())) {
+                        return Mono.error(new IllegalStateException("You cannot join your own game"));
                     }
+
+                    // Check if game already has a black player
+                    if (game.getBlackPlayerId() != null) {
+                        return Mono.error(new IllegalStateException("Game is full"));
+                    }
+
+                    // Add player to game
                     game.setBlackPlayerId(playerId);
                     game.setBlackPlayerName(playerName);
                     game.setStatus(GameStatus.IN_PROGRESS);
@@ -53,6 +83,24 @@ public class ChessService {
         return gameRepository.findAll()
                 .filter(game -> game.getStatus() == GameStatus.WAITING ||
                                game.getStatus() == GameStatus.IN_PROGRESS)
+                .sort((g1, g2) -> g2.getCreatedAt().compareTo(g1.getCreatedAt()))
+                .take(MAX_ACTIVE_GAMES);
+    }
+
+    public Flux<Game> getActiveGamesForPlayer(String playerId) {
+        if (playerId == null) {
+            return Flux.empty();
+        }
+
+        return getActiveGameForPlayer(playerId)
+                .flux() // Convert Mono to Flux
+                .concatWith(
+                    // Also show waiting games from other players that this player can join
+                    gameRepository.findAll()
+                            .filter(game -> game.getStatus() == GameStatus.WAITING)
+                            .filter(game -> !playerId.equals(game.getWhitePlayerId())) // Not their own waiting game
+                )
+                .distinct(Game::getId) // Remove duplicates if any
                 .sort((g1, g2) -> g2.getCreatedAt().compareTo(g1.getCreatedAt()))
                 .take(MAX_ACTIVE_GAMES);
     }

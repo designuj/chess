@@ -31,9 +31,20 @@ public class GameController {
     }
 
     @GetMapping
-    public Flux<GameListDTO> getActiveGames() {
-        return chessService.getActiveGames()
+    public Flux<GameListDTO> getActiveGames(@RequestParam(required = false) String playerId) {
+        if (playerId == null || playerId.trim().isEmpty()) {
+            // Return empty flux if no player ID provided
+            return Flux.empty();
+        }
+        return chessService.getActiveGamesForPlayer(playerId)
                 .map(GameListDTO::fromGame);
+    }
+
+    @GetMapping("/my-game")
+    public Mono<ResponseEntity<Game>> getMyActiveGame(@RequestParam String playerId) {
+        return chessService.getActiveGameForPlayer(playerId)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/{gameId}")

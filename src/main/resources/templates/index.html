@@ -12,210 +12,253 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
             min-height: 100vh;
             padding: 20px;
         }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .header {
+        .page-header {
+            max-width: 1200px;
+            margin: 0 auto 32px;
             text-align: center;
-            margin-bottom: 40px;
-            color: #fff;
         }
 
-        .header h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .header p {
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-
-        .player-input-section {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #495057;
+        .page-header h1 {
+            font-size: 28px;
             font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
         }
 
-        .input-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e9ecef;
+        .page-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            gap: 20px;
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 900px) {
+            .main-container {
+                grid-template-columns: 380px 1fr;
+            }
+        }
+
+        /* Player Setup Section */
+        .player-section {
+            background: #fff;
+            border: 1px solid #e0e0e0;
             border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s;
+            padding: 20px;
+            height: fit-content;
         }
 
-        .input-group input:focus {
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .input-field {
+            margin-bottom: 16px;
+        }
+
+        .input-field label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .input-field input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #fff;
+            transition: all 0.2s ease;
+        }
+
+        .input-field input:focus {
             outline: none;
-            border-color: #4caf50;
-            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+            border-color: #666;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .btn {
-            width: 100%;
-            padding: 14px;
+            padding: 10px 16px;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s ease;
+            text-align: center;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+            background: #333;
             color: white;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        .btn-primary:hover:not(:disabled) {
+            background: #1a1a1a;
         }
 
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #666;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #555;
+        }
+
+        /* Games Section */
         .games-section {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
         }
 
-        .games-section h2 {
-            color: #495057;
-            margin-bottom: 20px;
+        .games-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .games-header h2 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
         }
 
         .refresh-btn {
-            background: #e9ecef;
+            background: #333;
+            color: white;
             border: none;
+            width: 32px;
+            height: 32px;
             border-radius: 6px;
-            padding: 8px 16px;
-            font-size: 14px;
-            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            font-size: 16px;
         }
 
         .refresh-btn:hover {
-            background: #dee2e6;
+            background: #1a1a1a;
         }
 
-        .game-list {
-            display: grid;
-            gap: 15px;
+        .games-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .game-item {
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.3s;
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 14px;
             cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .game-item:hover {
-            border-color: #4caf50;
-            background: #f1f8f1;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.15);
+            border-color: #999;
+            background: #f5f5f5;
         }
 
-        .game-info {
-            flex: 1;
-        }
-
-        .game-id {
-            font-size: 1.2em;
-            font-weight: 700;
-            color: #4caf50;
-            margin-bottom: 8px;
-            font-family: monospace;
-        }
-
-        .game-players {
-            color: #6c757d;
-            font-size: 0.95em;
-        }
-
-        .game-players span {
+        .game-details h3 {
+            font-size: 14px;
             font-weight: 600;
-            color: #495057;
+            color: #1a1a1a;
+            margin-bottom: 4px;
         }
 
-        .game-status {
-            display: inline-block;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 13px;
+        .game-details p {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .game-badge {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 11px;
             font-weight: 600;
+            text-transform: uppercase;
+            background: #333;
+            color: white;
         }
 
-        .game-status.waiting {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .game-status.in-progress {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .empty-state {
+        .empty-message {
             text-align: center;
-            padding: 60px 20px;
-            color: #6c757d;
+            color: #999;
+            padding: 48px 20px;
+            font-size: 13px;
+            line-height: 1.8;
         }
 
-        .empty-state-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            opacity: 0.3;
+        .info-box {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 14px;
+            margin-bottom: 16px;
         }
 
-        .empty-state-text {
-            font-size: 1.1em;
+        .info-box p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
         }
 
-        /* Modal styles */
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 1000;
-            justify-content: center;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 50;
             align-items: center;
+            justify-content: center;
         }
 
         .modal.show {
@@ -224,106 +267,99 @@
 
         .modal-content {
             background: white;
-            border-radius: 15px;
-            padding: 30px;
+            border-radius: 8px;
+            padding: 24px;
+            margin: 20px;
             max-width: 400px;
-            width: 90%;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+            width: 100%;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
         }
 
         .modal-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-icon {
-            font-size: 40px;
-            margin-right: 15px;
-        }
-
-        .modal-title {
-            font-size: 24px;
+            font-size: 16px;
             font-weight: 600;
-            color: #333;
+            color: #1a1a1a;
+            margin-bottom: 8px;
         }
 
         .modal-message {
-            color: #666;
-            font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 25px;
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            font-size: 14px;
         }
 
-        .modal-button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-text {
+            background: #333;
             color: white;
-            transition: all 0.3s;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s ease;
         }
 
-        .modal-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        .btn-text:hover {
+            background: #1a1a1a;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>♟️ Chess</h1>
-            <p>Welcome to the Chess Lobby</p>
-        </div>
+    <div class="page-header">
+        <h1>Chess Game</h1>
+        <p>Play chess online with friends</p>
+    </div>
 
-        <div class="player-input-section">
-            <div class="input-group">
+    <div class="main-container">
+        <!-- Player Setup Section -->
+        <div class="player-section">
+            <h2 class="section-title">Player Setup</h2>
+
+            <div class="input-field">
                 <label for="playerName">Your Name</label>
                 <input type="text" id="playerName" placeholder="Enter your name" maxlength="20">
             </div>
-            <button class="btn btn-primary" onclick="createNewGame()">Create New Game</button>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="createGameBtn" onclick="createNewGame()" disabled>
+                    Create New Game
+                </button>
+                <button class="btn btn-secondary" id="continueBtn" onclick="continueMyGame()" style="display: none;">
+                    Continue My Game
+                </button>
+            </div>
         </div>
 
-        <div class="games-section">
-            <h2>
-                Active Games
-                <button class="refresh-btn" onclick="loadGames()">🔄 Refresh</button>
-            </h2>
-            <div class="game-list" id="gameList">
-                <div class="empty-state">
-                    <div class="empty-state-icon">♟️</div>
-                    <div class="empty-state-text">Loading games...</div>
+        <!-- Games Section -->
+        <div class="games-section" id="gamesSection">
+            <div class="games-header">
+                <h2>Available Games</h2>
+                <button class="refresh-btn" onclick="loadGames()" title="Refresh">↻</button>
+            </div>
+
+            <div id="gamesContent">
+                <div class="empty-message">
+                    Enter your name to see available games
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Error Modal -->
+    <!-- Modal -->
     <div class="modal" id="errorModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-icon">⚠️</div>
-                <div class="modal-title" id="modalTitle">Error</div>
+            <div class="modal-header" id="modalTitle">Information</div>
+            <p class="modal-message" id="modalMessage">Message content</p>
+            <div class="modal-actions">
+                <button class="btn-text" onclick="closeModal()">OK</button>
             </div>
-            <div class="modal-message" id="modalMessage"></div>
-            <button class="modal-button" onclick="closeModal()">OK</button>
         </div>
     </div>
 
@@ -357,31 +393,8 @@
                 }
                 return item.value;
             } catch (e) {
-                return null;
+                return itemStr;
             }
-        }
-
-        function initializePlayer() {
-            let playerId = getWithExpiry('playerId');
-            let playerName = getWithExpiry('playerName');
-
-            const nameInput = document.getElementById('playerName');
-
-            if (playerName) {
-                nameInput.value = playerName;
-            }
-
-            // If no playerId exists, generate one when user enters name
-            nameInput.addEventListener('input', function() {
-                const name = this.value.trim();
-                if (name && !playerId) {
-                    playerId = generatePlayerId();
-                    setWithExpiry('playerId', playerId);
-                }
-                if (name) {
-                    setWithExpiry('playerName', name);
-                }
-            });
         }
 
         function getCurrentPlayer() {
@@ -401,6 +414,44 @@
             document.getElementById('errorModal').classList.remove('show');
         }
 
+        function initializePlayer() {
+            const nameInput = document.getElementById('playerName');
+            const createGameBtn = document.getElementById('createGameBtn');
+
+            // Load existing player name
+            const savedName = getWithExpiry('playerName');
+            if (savedName) {
+                nameInput.value = savedName;
+                createGameBtn.disabled = false;
+                loadGames();
+            }
+
+            // Update on input
+            nameInput.addEventListener('input', function() {
+                const name = this.value.trim();
+
+                if (name) {
+                    let playerId = getWithExpiry('playerId');
+                    if (!playerId) {
+                        playerId = generatePlayerId();
+                        setWithExpiry('playerId', playerId);
+                    }
+                    setWithExpiry('playerName', name);
+                    createGameBtn.disabled = false;
+                    loadGames();
+                } else {
+                    localStorage.removeItem('playerName');
+                    createGameBtn.disabled = true;
+                    document.getElementById('continueBtn').style.display = 'none';
+                    document.getElementById('gamesContent').innerHTML = `
+                        <div class="empty-message">
+                            Enter your name to see available games
+                        </div>
+                    `;
+                }
+            });
+        }
+
         async function createNewGame() {
             const player = getCurrentPlayer();
 
@@ -415,6 +466,18 @@
             }
 
             try {
+                // Check if player already has an active game
+                const existingResponse = await fetch(`/api/games/my-game?playerId=${encodeURIComponent(player.playerId)}`);
+                if (existingResponse.ok) {
+                    const existingGame = await existingResponse.json();
+                    showModal('Existing Game Found', `You already have an active game. Redirecting...`);
+                    setTimeout(() => {
+                        window.location.href = `/game/${existingGame.id}`;
+                    }, 1500);
+                    return;
+                }
+
+                // Create new game
                 const response = await fetch('/api/games', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -423,7 +486,10 @@
 
                 if (response.ok) {
                     const game = await response.json();
-                    window.location.href = `/game/${game.id}`;
+                    showModal('Game Created', `Game created successfully! Redirecting...`);
+                    setTimeout(() => {
+                        window.location.href = `/game/${game.id}`;
+                    }, 1000);
                 } else {
                     const error = await response.json();
                     showModal('Cannot Create Game', error.error || 'Failed to create game');
@@ -455,10 +521,28 @@
                 });
 
                 if (response.ok) {
-                    window.location.href = `/game/${gameId}`;
+                    showModal('Joined Game', 'Successfully joined the game! Redirecting...');
+                    setTimeout(() => {
+                        window.location.href = `/game/${gameId}`;
+                    }, 1000);
                 } else {
                     const error = await response.json();
-                    showModal('Cannot Join Game', error.error || 'Failed to join game');
+                    const errorMessage = error.error || 'Failed to join game';
+
+                    if (errorMessage.includes('already have an active game')) {
+                        const gameIdMatch = errorMessage.match(/game: (\w+)/);
+                        if (gameIdMatch) {
+                            const existingGameId = gameIdMatch[1];
+                            showModal('Active Game Found', `You already have an active game. Redirecting...`);
+                            setTimeout(() => {
+                                window.location.href = `/game/${existingGameId}`;
+                            }, 2000);
+                        } else {
+                            showModal('Active Game Exists', 'You already have an active game. Please finish it first.');
+                        }
+                    } else {
+                        showModal('Cannot Join Game', errorMessage);
+                    }
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -466,97 +550,90 @@
             }
         }
 
-        async function viewGame(gameId) {
-            // Just navigate to the game - rejoin logic will be handled on game page
-            window.location.href = `/game/${gameId}`;
-        }
-
         async function loadGames() {
+            const player = getCurrentPlayer();
+
+            if (!player.playerName || !player.playerId) {
+                return;
+            }
+
+            const gamesContent = document.getElementById('gamesContent');
+            const continueBtn = document.getElementById('continueBtn');
+
             try {
-                const response = await fetch('/api/games');
-                const allGames = await response.json();
-                const player = getCurrentPlayer();
+                // Check if player has an active game
+                const myGameResponse = await fetch(`/api/games/my-game?playerId=${encodeURIComponent(player.playerId)}`);
 
-                // Filter games: show only games waiting for players OR games where current user is playing
-                const filteredGames = allGames.filter(game => {
-                    // Always show games waiting for a second player
-                    if (game.status === 'WAITING') return true;
+                if (myGameResponse.ok) {
+                    // Player has active game
+                    const myGame = await myGameResponse.json();
+                    continueBtn.style.display = 'block';
+                    continueBtn.setAttribute('data-game-id', myGame.id);
+                    continueBtn.textContent = `Continue Game ${myGame.id}`;
 
-                    // For in-progress games, only show if current user is one of the players
-                    if (game.status === 'IN_PROGRESS' && player.playerId) {
-                        return game.whitePlayerId === player.playerId || game.blackPlayerId === player.playerId;
+                    gamesContent.innerHTML = `
+                        <div class="info-box">
+                            <p>You have an active game in progress.<br>Use the "Continue" button to resume playing.</p>
+                        </div>
+                    `;
+                } else {
+                    // No active game - show available games
+                    continueBtn.style.display = 'none';
+
+                    const response = await fetch(`/api/games?playerId=${encodeURIComponent(player.playerId)}`);
+                    const allGames = await response.json();
+
+                    if (allGames.length === 0) {
+                        gamesContent.innerHTML = `
+                            <div class="empty-message">
+                                No games available to join<br>
+                                <small>Create a new game to start playing</small>
+                            </div>
+                        `;
+                        return;
                     }
 
-                    return false;
-                });
-
-                const gameList = document.getElementById('gameList');
-
-                if (filteredGames.length === 0) {
-                    gameList.innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-state-icon">♟️</div>
-                            <div class="empty-state-text">No active games. Create one to start playing!</div>
+                    const gamesList = allGames.map(game => `
+                        <div class="game-item" onclick="joinGame('${game.id}')">
+                            <div class="game-details">
+                                <h3>Game ${game.id}</h3>
+                                <p>${game.whitePlayerName || 'Player'} is waiting for opponent</p>
+                            </div>
+                            <div class="game-badge">Join</div>
                         </div>
-                    `;
-                    return;
+                    `).join('');
+
+                    gamesContent.innerHTML = `<div class="games-list">${gamesList}</div>`;
                 }
-
-                gameList.innerHTML = filteredGames.map(game => {
-                    const clickAction = game.status === 'WAITING' ?
-                        `joinGame('${game.id}')` :
-                        `viewGame('${game.id}')`;
-
-                    return `
-                        <div class="game-item" onclick="${clickAction}">
-                            <div class="game-info">
-                                <div class="game-id">${game.id}</div>
-                                <div class="game-players">
-                                    <span>${game.whitePlayerName || 'Player 1'}</span>
-                                    ${game.blackPlayerName ? ` vs <span>${game.blackPlayerName}</span>` : ' is waiting for opponent'}
-                                </div>
-                            </div>
-                            <div class="game-status ${game.status.toLowerCase().replace('_', '-')}">
-                                ${game.status === 'WAITING' ? 'Waiting' : 'In Progress'}
-                            </div>
-                        </div>
-                    `;
-                }).join('');
             } catch (error) {
                 console.error('Error loading games:', error);
-                document.getElementById('gameList').innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">⚠️</div>
-                        <div class="empty-state-text">Failed to load games. Please refresh the page.</div>
+                gamesContent.innerHTML = `
+                    <div class="empty-message">
+                        Failed to load games<br>
+                        <small>Please check your connection and try again</small>
                     </div>
                 `;
             }
         }
 
-        // Initialize player on page load
+        function continueMyGame() {
+            const continueBtn = document.getElementById('continueBtn');
+            const gameId = continueBtn.getAttribute('data-game-id');
+            if (gameId) {
+                window.location.href = `/game/${gameId}`;
+            }
+        }
+
+        // Initialize on page load
         initializePlayer();
 
-        // Load games on page load
-        loadGames();
-
-        // Auto-refresh every 5 seconds
-        setInterval(loadGames, 5000);
-
-        // Close modal on background click
-        document.getElementById('errorModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
+        // Auto-refresh every 5 seconds if player name is set
+        setInterval(() => {
+            const player = getCurrentPlayer();
+            if (player.playerName) {
+                loadGames();
             }
-        });
-
-        // Auto-cleanup completed games
-        setInterval(async () => {
-            try {
-                await fetch('/api/games/cleanup', { method: 'POST' });
-            } catch (error) {
-                console.error('Cleanup error:', error);
-            }
-        }, 30000); // Every 30 seconds
+        }, 5000);
     </script>
 </body>
 </html>

@@ -10,9 +10,7 @@ A real-time multiplayer chess application built with Spring Boot and WebSocket, 
   - Path validation to prevent illegal jumps
   - Turn-based gameplay with move history
 - **Multiple Games**: Support for multiple concurrent games with unique game IDs
-- **Spectator Mode**: Watch ongoing games without participating
 - **Responsive UI**: Mobile-friendly chess board interface, toned color, great design
-- **Game States**: Track game progression (waiting, in progress, completed, abandoned)
 - **Auto-reconnection**: WebSocket client automatically reconnects on connection loss
 
 ## Technology Stack
@@ -33,6 +31,7 @@ A real-time multiplayer chess application built with Spring Boot and WebSocket, 
 
 ### Database
 - MongoDB (reactive driver)
+- Store only info about a game that started (has two players joined)
 
 ## Prerequisites
 
@@ -69,8 +68,5 @@ export MONGODB_URI="mongodb+srv://username:password@cluster.mongodb.net/chess?re
 
 1. Clone the repository
 2. Set the MongoDB URI environment variable (or use default localhost)
-3. Run the application:
-   ```bash
-   mvn spring-boot:run
-   ```
+3. Run the application with `dev` profile
 4. Open http://localhost:8080
