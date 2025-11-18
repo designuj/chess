@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Game - Welcome</title>
+    <link rel="stylesheet" href="/css/index.css">
+</head>
+<body>
+    <div class="container">
+        <div class="chess-icon">♔</div>
+        <div class="header">
+            <h1>Chess Game</h1>
+            <p>Enter your name to start playing</p>
+        </div>
+
+        <form>
+            <div class="form-group">
+                <label for="playerName">Name</label>
+                <input
+                    type="text"
+                    id="playerName"
+                    name="playerName"
+                    placeholder="Enter your name"
+                    maxlength="20"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="btn-submit">
+                Submit
+            </button>
+        </form>
+    </div>
+
+    <script src="/js/index.js"></script>
+</body>
+</html>
