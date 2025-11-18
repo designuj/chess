@@ -57,7 +57,7 @@ public class UserWebSocketHandler implements WebSocketHandler {
                         .map(session::textMessage)
         );
 
-        return Mono.zip(input, output).then();
+        return Flux.merge(input, output).then();
     }
 
     private Mono<Void> handleIncomingMessage(WebSocketSession session, String message) {
@@ -128,7 +128,7 @@ public class UserWebSocketHandler implements WebSocketHandler {
     private void sendToSession(WebSocketSession session, Map<String, Object> message) {
         try {
             String json = objectMapper.writeValueAsString(message);
-            broadcastSink.tryEmitNext(json);
+            session.send(Mono.just(session.textMessage(json))).subscribe();
         } catch (Exception e) {
             log.error("Error sending message to session: {}", e.getMessage(), e);
         }
