@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class UserWebSocketHandler implements WebSocketHandler {
 
     private final UserSessionService userSessionService;
+    private final dev.autowired.chess.service.ChessGameService chessGameService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // Store all active WebSocket sessions
@@ -75,6 +76,15 @@ public class UserWebSocketHandler implements WebSocketHandler {
                         break;
                     case "PING":
                         handlePing(session);
+                        break;
+                    case "SEND_INVITATION":
+                        handleSendInvitation(messageMap);
+                        break;
+                    case "ACCEPT_INVITATION":
+                        handleAcceptInvitation(messageMap);
+                        break;
+                    case "DECLINE_INVITATION":
+                        handleDeclineInvitation(messageMap);
                         break;
                     default:
                         log.warn("Unknown message type: {}", type);
@@ -141,6 +151,112 @@ public class UserWebSocketHandler implements WebSocketHandler {
             log.debug("Broadcasting message: {}", json);
         } catch (Exception e) {
             log.error("Error broadcasting message: {}", e.getMessage(), e);
+        }
+    }
+
+    private void handleSendInvitation(Map<String, Object> messageMap) {
+        String fromUserId = (String) messageMap.get("fromUserId");
+        String fromUserName = (String) messageMap.get("fromUserName");
+        String toUserId = (String) messageMap.get("toUserId");
+        String toUserName = (String) messageMap.get("toUserName");
+
+        log.info("Invitation from {} to {}", fromUserName, toUserName);
+
+        // Create a new game
+        chessGameService.createGame(fromUserId, fromUserName)
+                .subscribe(game -> {
+                    log.info("Game created for invitation: {}", game.getId());
+
+                    // Find the target user's session
+                    ConnectedUser targetUser = userSessionService.getUserById(toUserId);
+                    if (targetUser != null) {
+                        WebSocketSession targetSession = sessions.get(targetUser.getSessionId());
+                        if (targetSession != null) {
+                            // Send invitation to target user
+                            sendToSession(targetSession, Map.of(
+                                    "type", "INVITATION_RECEIVED",
+                                    "fromUserId", fromUserId,
+                                    "fromUserName", fromUserName,
+                                    "gameId", game.getId()
+                            ));
+                        }
+                    }
+                }, error -> {
+                    log.error("Error creating game for invitation: {}", error.getMessage());
+                });
+    }
+
+    private void handleAcceptInvitation(Map<String, Object> messageMap) {
+        String fromUserId = (String) messageMap.get("fromUserId");
+        String fromUserName = (String) messageMap.get("fromUserName");
+        String toUserId = (String) messageMap.get("toUserId");
+        String toUserName = (String) messageMap.get("toUserName");
+        String gameId = (String) messageMap.get("gameId");
+
+        log.info("Invitation accepted by {} for game {}", toUserName, gameId);
+
+        // Join the game
+        chessGameService.joinGame(gameId, toUserId, toUserName)
+                .subscribe(game -> {
+                    log.info("Player {} joined game {}", toUserName, gameId);
+
+                    // Send acceptance to both users
+                    ConnectedUser inviterUser = userSessionService.getUserById(fromUserId);
+                    ConnectedUser accepterUser = userSessionService.getUserById(toUserId);
+
+                    if (inviterUser != null) {
+                        WebSocketSession inviterSession = sessions.get(inviterUser.getSessionId());
+                        if (inviterSession != null) {
+                            sendToSession(inviterSession, Map.of(
+                                    "type", "INVITATION_ACCEPTED",
+                                    "gameId", gameId,
+                                    "fromUserName", toUserName
+                            ));
+                        }
+                    }
+
+                    if (accepterUser != null) {
+                        WebSocketSession accepterSession = sessions.get(accepterUser.getSessionId());
+                        if (accepterSession != null) {
+                            sendToSession(accepterSession, Map.of(
+                                    "type", "INVITATION_ACCEPTED",
+                                    "gameId", gameId,
+                                    "fromUserName", fromUserName
+                            ));
+                        }
+                    }
+                }, error -> {
+                    log.error("Error joining game: {}", error.getMessage());
+                });
+    }
+
+    private void handleDeclineInvitation(Map<String, Object> messageMap) {
+        String fromUserId = (String) messageMap.get("fromUserId");
+        String fromUserName = (String) messageMap.get("fromUserName");
+        String toUserId = (String) messageMap.get("toUserId");
+        String toUserName = (String) messageMap.get("toUserName");
+        String gameId = (String) messageMap.get("gameId");
+
+        log.info("Invitation declined by {} for game {}", toUserName, gameId);
+
+        // Delete the game
+        chessGameService.deleteGame(gameId)
+                .subscribe(
+                        v -> log.info("Game {} deleted after decline", gameId),
+                        error -> log.error("Error deleting game: {}", error.getMessage())
+                );
+
+        // Notify the inviter
+        ConnectedUser inviterUser = userSessionService.getUserById(fromUserId);
+        if (inviterUser != null) {
+            WebSocketSession inviterSession = sessions.get(inviterUser.getSessionId());
+            if (inviterSession != null) {
+                sendToSession(inviterSession, Map.of(
+                        "type", "INVITATION_DECLINED",
+                        "fromUserName", toUserName,
+                        "gameId", gameId
+                ));
+            }
         }
     }
 }

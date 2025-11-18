@@ -114,6 +114,19 @@ function handleWebSocketMessage(message) {
             // Heartbeat response
             break;
 
+        case 'INVITATION_RECEIVED':
+            showInvitationNotification(message.fromUserId, message.fromUserName, message.gameId);
+            break;
+
+        case 'INVITATION_ACCEPTED':
+            redirectToGame(message.gameId);
+            break;
+
+        case 'INVITATION_DECLINED':
+            hideModal();
+            alert(`${message.fromUserName} declined your invitation.`);
+            break;
+
         default:
             console.log('Unknown message type:', message.type);
     }
@@ -216,9 +229,167 @@ function selectUser(userId) {
         return;
     }
 
-    console.log('Selected user:', userId);
-    // TODO: Navigate to game page or send invitation
-    alert('Game invitation will be implemented in next steps!');
+    // Find user info
+    const userCards = document.querySelectorAll('.user-card');
+    let targetUserName = '';
+
+    userCards.forEach(card => {
+        if (card.onclick && card.onclick.toString().includes(userId)) {
+            targetUserName = card.querySelector('h4').textContent;
+        }
+    });
+
+    showConfirmationModal(userId, targetUserName);
+}
+
+// Show confirmation modal before sending invitation
+function showConfirmationModal(toUserId, toUserName) {
+    const modalHtml = `
+        <div class="modal-overlay" id="confirmModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <div class="modal-icon">♔</div>
+                    <h3>Send Game Invitation</h3>
+                    <p>Do you want to send a game invitation to <strong>${toUserName}</strong>?</p>
+                </div>
+                <div class="modal-actions">
+                    <button class="modal-btn modal-btn-secondary" onclick="hideModal()">Cancel</button>
+                    <button class="modal-btn modal-btn-primary" onclick="sendInvitation('${toUserId}', '${toUserName}')">Send Invitation</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    // Trigger animation
+    setTimeout(() => {
+        document.getElementById('confirmModal').classList.add('show');
+    }, 10);
+}
+
+// Hide modal
+function hideModal() {
+    const modal = document.getElementById('confirmModal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.remove(), 300);
+    }
+}
+
+// Send invitation via WebSocket
+function sendInvitation(toUserId, toUserName) {
+    const currentUser = getUserData();
+    if (!currentUser) return;
+
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+            type: 'SEND_INVITATION',
+            fromUserId: currentUser.userId,
+            fromUserName: currentUser.userName,
+            toUserId: toUserId,
+            toUserName: toUserName
+        }));
+
+        console.log('Invitation sent to:', toUserName);
+
+        // Update modal to show waiting state
+        const modal = document.getElementById('confirmModal');
+        if (modal) {
+            modal.querySelector('.modal-header p').innerHTML =
+                `Waiting for <strong>${toUserName}</strong> to accept...`;
+            modal.querySelector('.modal-actions').innerHTML = `
+                <button class="modal-btn modal-btn-secondary" onclick="hideModal()">Cancel</button>
+            `;
+        }
+    }
+}
+
+// Show invitation notification
+function showInvitationNotification(fromUserId, fromUserName, gameId) {
+    const notificationHtml = `
+        <div class="notification" id="invitationNotification">
+            <div class="notification-header">
+                <div class="notification-icon">♔</div>
+                <h4 class="notification-title">Game Invitation</h4>
+            </div>
+            <p class="notification-message">
+                <strong>${fromUserName}</strong> wants to play chess with you!
+            </p>
+            <div class="notification-actions">
+                <button class="notification-btn notification-btn-decline"
+                        onclick="declineInvitation('${fromUserId}', '${fromUserName}', '${gameId}')">
+                    Decline
+                </button>
+                <button class="notification-btn notification-btn-accept"
+                        onclick="acceptInvitation('${fromUserId}', '${fromUserName}', '${gameId}')">
+                    Accept
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', notificationHtml);
+
+    // Trigger animation
+    setTimeout(() => {
+        document.getElementById('invitationNotification').classList.add('show');
+    }, 10);
+}
+
+// Hide notification
+function hideNotification() {
+    const notification = document.getElementById('invitationNotification');
+    if (notification) {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+    }
+}
+
+// Accept invitation
+function acceptInvitation(fromUserId, fromUserName, gameId) {
+    const currentUser = getUserData();
+    if (!currentUser) return;
+
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+            type: 'ACCEPT_INVITATION',
+            fromUserId: fromUserId,
+            fromUserName: fromUserName,
+            toUserId: currentUser.userId,
+            toUserName: currentUser.userName,
+            gameId: gameId
+        }));
+
+        console.log('Invitation accepted, joining game:', gameId);
+        hideNotification();
+    }
+}
+
+// Decline invitation
+function declineInvitation(fromUserId, fromUserName, gameId) {
+    const currentUser = getUserData();
+    if (!currentUser) return;
+
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+            type: 'DECLINE_INVITATION',
+            fromUserId: fromUserId,
+            fromUserName: fromUserName,
+            toUserId: currentUser.userId,
+            toUserName: currentUser.userName,
+            gameId: gameId
+        }));
+
+        console.log('Invitation declined');
+        hideNotification();
+    }
+}
+
+// Redirect to game page
+function redirectToGame(gameId) {
+    console.log('Redirecting to game:', gameId);
+    window.location.href = `/game?id=${gameId}`;
 }
 
 // Logout (clear localStorage)
