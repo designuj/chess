@@ -4,15 +4,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class ViewController {
+class ViewController {
 
     @GetMapping("/")
-    public String index() {
+    String index() {
         return "index";
     }
 
     @GetMapping("/game")
-    public String game() {
+    String game() {
         return "game";
     }
 }

@@ -11,10 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class WebSocketConfig {
+class WebSocketConfig {
 
     @Bean
-    public HandlerMapping webSocketHandlerMapping(UserWebSocketHandler userWebSocketHandler) {
+    HandlerMapping webSocketHandlerMapping(UserWebSocketHandler userWebSocketHandler) {
         Map<String, WebSocketHandler> map = new HashMap<>();
         map.put("/ws/users", userWebSocketHandler);
 
@@ -25,7 +25,7 @@ public class WebSocketConfig {
     }
 
     @Bean
-    public WebSocketHandlerAdapter handlerAdapter() {
+    WebSocketHandlerAdapter handlerAdapter() {
         return new WebSocketHandlerAdapter();
     }
 }

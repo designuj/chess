@@ -20,10 +20,10 @@ public class Game {
     private String blackPlayerName;
 
     private GameStatus status;
-    private String currentTurn; // WHITE or BLACK
+    private String currentTurn;
 
-    private List<Move> moves; // Array of moves
-    private String[][] board; // 8x8 board state
+    private List<Move> moves;
+    private String[][] board;
 
     private String winner;
     private LocalDateTime createdAt;

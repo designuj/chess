@@ -7,12 +7,9 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class ChessEngine {
+class ChessEngine {
 
-    /**
-     * Validate and execute a move
-     */
-    public boolean makeMove(Game game, String from, String to, String playerId) {
+    boolean makeMove(Game game, String from, String to, String playerId) {
         // Verify it's the player's turn
         String playerColor = getPlayerColor(game, playerId);
         if (playerColor == null || !playerColor.equals(game.getCurrentTurn())) {

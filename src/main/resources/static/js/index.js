@@ -115,7 +115,7 @@ function handleWebSocketMessage(message) {
             break;
 
         case 'INVITATION_RECEIVED':
-            showInvitationNotification(message.fromUserId, message.fromUserName, message.gameId);
+            showInvitationNotification(message.fromUserId, message.fromUserName);
             break;
 
         case 'INVITATION_ACCEPTED':
@@ -306,7 +306,7 @@ function sendInvitation(toUserId, toUserName) {
 }
 
 // Show invitation notification
-function showInvitationNotification(fromUserId, fromUserName, gameId) {
+function showInvitationNotification(fromUserId, fromUserName) {
     const notificationHtml = `
         <div class="notification" id="invitationNotification">
             <div class="notification-header">
@@ -318,11 +318,11 @@ function showInvitationNotification(fromUserId, fromUserName, gameId) {
             </p>
             <div class="notification-actions">
                 <button class="notification-btn notification-btn-decline"
-                        onclick="declineInvitation('${fromUserId}', '${fromUserName}', '${gameId}')">
+                        onclick="declineInvitation('${fromUserId}', '${fromUserName}')">
                     Decline
                 </button>
                 <button class="notification-btn notification-btn-accept"
-                        onclick="acceptInvitation('${fromUserId}', '${fromUserName}', '${gameId}')">
+                        onclick="acceptInvitation('${fromUserId}', '${fromUserName}')">
                     Accept
                 </button>
             </div>
@@ -347,7 +347,7 @@ function hideNotification() {
 }
 
 // Accept invitation
-function acceptInvitation(fromUserId, fromUserName, gameId) {
+function acceptInvitation(fromUserId, fromUserName) {
     const currentUser = getUserData();
     if (!currentUser) return;
 
@@ -357,17 +357,16 @@ function acceptInvitation(fromUserId, fromUserName, gameId) {
             fromUserId: fromUserId,
             fromUserName: fromUserName,
             toUserId: currentUser.userId,
-            toUserName: currentUser.userName,
-            gameId: gameId
+            toUserName: currentUser.userName
         }));
 
-        console.log('Invitation accepted, joining game:', gameId);
+        console.log('Invitation accepted, creating game...');
         hideNotification();
     }
 }
 
 // Decline invitation
-function declineInvitation(fromUserId, fromUserName, gameId) {
+function declineInvitation(fromUserId, fromUserName) {
     const currentUser = getUserData();
     if (!currentUser) return;
 
@@ -377,8 +376,7 @@ function declineInvitation(fromUserId, fromUserName, gameId) {
             fromUserId: fromUserId,
             fromUserName: fromUserName,
             toUserId: currentUser.userId,
-            toUserName: currentUser.userName,
-            gameId: gameId
+            toUserName: currentUser.userName
         }));
 
         console.log('Invitation declined');
