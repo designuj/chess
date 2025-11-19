@@ -9,6 +9,52 @@ import org.springframework.stereotype.Service;
 @Service
 class ChessEngine {
 
+    /**
+     * Get all possible moves for a piece at the given position
+     */
+    java.util.List<String> getPossibleMoves(Game game, String from, String playerId) {
+        java.util.List<String> possibleMoves = new java.util.ArrayList<>();
+
+        // Verify it's the player's turn
+        String playerColor = getPlayerColor(game, playerId);
+        if (playerColor == null || !playerColor.equals(game.getCurrentTurn())) {
+            return possibleMoves; // Empty list if not player's turn
+        }
+
+        // Parse position
+        int[] fromPos = parsePosition(from);
+        if (fromPos == null) {
+            return possibleMoves;
+        }
+
+        String[][] board = game.getBoard();
+        String piece = board[fromPos[0]][fromPos[1]];
+
+        if (piece == null) {
+            return possibleMoves;
+        }
+
+        // Verify piece belongs to current player
+        boolean isWhitePiece = Character.isUpperCase(piece.charAt(0));
+        if ((playerColor.equals("WHITE") && !isWhitePiece) ||
+            (playerColor.equals("BLACK") && isWhitePiece)) {
+            return possibleMoves;
+        }
+
+        // Check all possible squares
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                int[] toPos = new int[]{row, col};
+                if (isValidMove(board, piece, fromPos, toPos)) {
+                    String to = positionToString(toPos);
+                    possibleMoves.add(to);
+                }
+            }
+        }
+
+        return possibleMoves;
+    }
+
     boolean makeMove(Game game, String from, String to, String playerId) {
         // Verify it's the player's turn
         String playerColor = getPlayerColor(game, playerId);
@@ -88,6 +134,12 @@ class ChessEngine {
         return new int[]{row, col};
     }
 
+    private String positionToString(int[] pos) {
+        char file = (char) ('a' + pos[1]); // Convert col to a-h
+        int rankNumber = 8 - pos[0]; // Convert row to 1-8
+        return "" + file + rankNumber;
+    }
+
     /**
      * Validate move based on chess rules
      */
@@ -153,7 +205,19 @@ class ChessEngine {
         int colDiff = Math.abs(to[1] - from[1]);
 
         // L-shape: 2+1 or 1+2
-        return (rowDiff == 2 && colDiff == 1) || (rowDiff == 1 && colDiff == 2);
+        if (!((rowDiff == 2 && colDiff == 1) || (rowDiff == 1 && colDiff == 2))) {
+            return false;
+        }
+
+        // Check if destination has friendly piece
+        String targetPiece = board[to[0]][to[1]];
+        if (targetPiece != null) {
+            String movingPiece = board[from[0]][from[1]];
+            return Character.isUpperCase(movingPiece.charAt(0)) !=
+                   Character.isUpperCase(targetPiece.charAt(0));
+        }
+
+        return true;
     }
 
     private boolean isValidBishopMove(String[][] board, int[] from, int[] to) {
@@ -175,7 +239,19 @@ class ChessEngine {
         int colDiff = Math.abs(to[1] - from[1]);
 
         // King moves one square in any direction
-        return rowDiff <= 1 && colDiff <= 1;
+        if (rowDiff > 1 || colDiff > 1) {
+            return false;
+        }
+
+        // Check if destination has friendly piece
+        String targetPiece = board[to[0]][to[1]];
+        if (targetPiece != null) {
+            String movingPiece = board[from[0]][from[1]];
+            return Character.isUpperCase(movingPiece.charAt(0)) !=
+                   Character.isUpperCase(targetPiece.charAt(0));
+        }
+
+        return true;
     }
 
     /**

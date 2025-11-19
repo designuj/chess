@@ -31,13 +31,17 @@ public class UserWebSocketHandler implements WebSocketHandler {
     // Store all active WebSocket sessions
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
-    // Sink for broadcasting messages to all connected clients
-    private final Sinks.Many<String> broadcastSink = Sinks.many().multicast().onBackpressureBuffer();
+    // Store per-session sinks
+    private final Map<String, Sinks.Many<String>> sessionSinks = new ConcurrentHashMap<>();
 
     @Override
     public Mono<Void> handle(WebSocketSession session) {
         String sessionId = session.getId();
         sessions.put(sessionId, session);
+
+        // Create a sink for this specific session
+        Sinks.Many<String> sessionSink = Sinks.many().multicast().onBackpressureBuffer();
+        sessionSinks.put(sessionId, sessionSink);
 
         log.info("WebSocket session opened: {}", sessionId);
 
@@ -47,15 +51,16 @@ public class UserWebSocketHandler implements WebSocketHandler {
                 .flatMap(message -> handleIncomingMessage(session, message))
                 .doFinally(signalType -> {
                     sessions.remove(sessionId);
+                    sessionSinks.remove(sessionId);
                     userSessionService.removeUser(sessionId);
                     broadcastUserList();
                     log.info("WebSocket session closed: {} ({})", sessionId, signalType);
                 })
                 .then();
 
-        // Send messages from broadcast sink
+        // Send messages from this session's sink
         Mono<Void> output = session.send(
-                broadcastSink.asFlux()
+                sessionSink.asFlux()
                         .map(session::textMessage)
         );
 
@@ -138,17 +143,46 @@ public class UserWebSocketHandler implements WebSocketHandler {
 
     private void sendToSession(WebSocketSession session, Map<String, Object> message) {
         try {
-            String json = objectMapper.writeValueAsString(message);
-            session.send(Mono.just(session.textMessage(json))).subscribe();
+            String sessionId = session.getId();
+            Sinks.Many<String> sink = sessionSinks.get(sessionId);
+            if (sink != null) {
+                String json = objectMapper.writeValueAsString(message);
+                sink.tryEmitNext(json);
+                log.debug("Sent message to session {}: {}", sessionId, json);
+            }
         } catch (Exception e) {
             log.error("Error sending message to session: {}", e.getMessage(), e);
+        }
+    }
+
+    private void sendToUser(String userId, Map<String, Object> message) {
+        try {
+            log.info("Attempting to send message to user: {}, message type: {}", userId, message.get("type"));
+            ConnectedUser user = userSessionService.getUserById(userId);
+            if (user != null) {
+                log.info("User found: {}, sessionId: {}", user.getUserName(), user.getSessionId());
+                WebSocketSession session = sessions.get(user.getSessionId());
+                if (session != null) {
+                    log.info("Session found for user: {}, sending message", user.getUserName());
+                    sendToSession(session, message);
+                } else {
+                    log.warn("Session not found for user: {}, sessionId: {}", userId, user.getSessionId());
+                }
+            } else {
+                log.warn("User not found in UserSessionService: {}", userId);
+            }
+        } catch (Exception e) {
+            log.error("Error sending message to user: {}", e.getMessage(), e);
         }
     }
 
     private void broadcast(Map<String, Object> message) {
         try {
             String json = objectMapper.writeValueAsString(message);
-            broadcastSink.tryEmitNext(json);
+            // Send to all sessions
+            for (Sinks.Many<String> sink : sessionSinks.values()) {
+                sink.tryEmitNext(json);
+            }
             log.debug("Broadcasting message: {}", json);
         } catch (Exception e) {
             log.error("Error broadcasting message: {}", e.getMessage(), e);
@@ -248,5 +282,27 @@ public class UserWebSocketHandler implements WebSocketHandler {
                 ));
             }
         }
+    }
+
+    /**
+     * Broadcast game update to both players only
+     */
+    public void broadcastGameUpdate(dev.autowired.chess.model.Game game) {
+        log.info("Broadcasting game update for game: {} to both players (white: {}, black: {})",
+                game.getId(), game.getWhitePlayerId(), game.getBlackPlayerId());
+        log.info("Current turn: {}", game.getCurrentTurn());
+
+        Map<String, Object> message = new HashMap<>();
+        message.put("type", "GAME_UPDATE");
+        message.put("game", game);
+        message.put("gameId", game.getId());
+
+        log.info("Sending game update to white player: {}", game.getWhitePlayerId());
+        sendToUser(game.getWhitePlayerId(), message);
+
+        log.info("Sending game update to black player: {}", game.getBlackPlayerId());
+        sendToUser(game.getBlackPlayerId(), message);
+
+        log.info("Finished broadcasting game update");
     }
 }

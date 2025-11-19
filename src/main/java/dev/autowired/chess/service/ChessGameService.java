@@ -46,6 +46,16 @@ public class ChessGameService {
         return gameRepository.findById(gameId);
     }
 
+    public Mono<java.util.List<String>> getPossibleMoves(String gameId, String from, String playerId) {
+        return gameRepository.findById(gameId)
+                .map(game -> {
+                    if (game.getStatus() != GameStatus.IN_PROGRESS) {
+                        return java.util.Collections.emptyList();
+                    }
+                    return chessEngine.getPossibleMoves(game, from, playerId);
+                });
+    }
+
     public Mono<Game> makeMove(String gameId, String playerId, String from, String to) {
         return gameRepository.findById(gameId)
                 .flatMap(game -> {

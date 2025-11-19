@@ -2,6 +2,9 @@
 let gameId = null;
 let gameData = null;
 let currentUser = null;
+let selectedSquare = null;
+let possibleMoves = [];
+let websocket = null;
 
 // Get game ID from URL
 function getGameIdFromUrl() {
@@ -35,6 +38,144 @@ async function fetchGame(gameId) {
         alert('Failed to load game. Redirecting to home...');
         window.location.href = '/';
         return null;
+    }
+}
+
+// Convert row/col to chess notation (e.g., 0,0 -> a8)
+function positionToNotation(row, col) {
+    const file = String.fromCharCode(97 + col); // 'a' + col
+    const rank = 8 - row;
+    return file + rank;
+}
+
+// Convert chess notation to row/col (e.g., a8 -> 0,0)
+function notationToPosition(notation) {
+    const file = notation.charCodeAt(0) - 97; // col
+    const rank = 8 - parseInt(notation.charAt(1)); // row
+    return { row: rank, col: file };
+}
+
+// Highlight possible moves (don't clear selected piece)
+function highlightPossibleMoves(moves) {
+    console.log('Highlighting possible moves:', moves);
+    // Clear only possible-move highlights, not selected piece
+    document.querySelectorAll('.square.possible-move').forEach(square => {
+        square.classList.remove('possible-move');
+    });
+
+    moves.forEach(move => {
+        const pos = notationToPosition(move);
+        console.log(`Looking for square at row=${pos.row}, col=${pos.col} for move ${move}`);
+        const square = document.querySelector(`[data-row="${pos.row}"][data-col="${pos.col}"]`);
+        if (square) {
+            square.classList.add('possible-move');
+            console.log('Added possible-move class to square:', move, pos, 'Classes:', square.className);
+        } else {
+            console.warn('Could not find square for move:', move, pos);
+        }
+    });
+
+    // Verify highlights were added
+    const highlightedSquares = document.querySelectorAll('.possible-move');
+    console.log(`Total highlighted squares: ${highlightedSquares.length}`);
+}
+
+// Clear all highlights
+function clearHighlights() {
+    document.querySelectorAll('.square').forEach(square => {
+        square.classList.remove('selected', 'possible-move');
+    });
+}
+
+// Fetch possible moves for a piece
+async function fetchPossibleMoves(from) {
+    try {
+        const response = await fetch(`/api/games/${gameId}/possible-moves?from=${from}&playerId=${currentUser.userId}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch possible moves');
+        }
+        const moves = await response.json();
+        console.log('Possible moves:', moves);
+        return moves;
+    } catch (error) {
+        console.error('Error fetching possible moves:', error);
+        return [];
+    }
+}
+
+// Make a move
+async function makeMove(from, to) {
+    try {
+        const response = await fetch(`/api/games/${gameId}/move`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                playerId: currentUser.userId,
+                from: from,
+                to: to
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Invalid move');
+        }
+
+        const updatedGame = await response.json();
+        console.log('Move successful:', updatedGame);
+        gameData = updatedGame;
+        updateGameUI(gameData, currentUser);
+        return true;
+    } catch (error) {
+        console.error('Error making move:', error);
+        alert('Invalid move!');
+        return false;
+    }
+}
+
+// Handle square click
+async function handleSquareClick(event) {
+    const square = event.currentTarget;
+    const row = parseInt(square.dataset.row);
+    const col = parseInt(square.dataset.col);
+    const position = positionToNotation(row, col);
+
+    // If no piece is selected yet
+    if (!selectedSquare) {
+        const piece = gameData.board[row][col];
+        if (!piece) return; // No piece on this square
+
+        // Check if it's player's turn
+        const playerRole = getPlayerRole(gameData, currentUser.userId);
+        const isWhitePiece = piece === piece.toUpperCase();
+        const isPlayersTurn =
+            (playerRole === 'white' && gameData.currentTurn === 'WHITE') ||
+            (playerRole === 'black' && gameData.currentTurn === 'BLACK');
+        const isPlayersPiece =
+            (playerRole === 'white' && isWhitePiece) ||
+            (playerRole === 'black' && !isWhitePiece);
+
+        if (!isPlayersTurn || !isPlayersPiece) {
+            return; // Not player's turn or not their piece
+        }
+
+        // Select this piece and show possible moves
+        selectedSquare = position;
+        square.classList.add('selected');
+        possibleMoves = await fetchPossibleMoves(position);
+        highlightPossibleMoves(possibleMoves);
+    } else {
+        // A piece is already selected, try to move
+        if (possibleMoves.includes(position)) {
+            // Valid destination, make the move
+            await makeMove(selectedSquare, position);
+        }
+
+        // Deselect and clear highlights
+        selectedSquare = null;
+        possibleMoves = [];
+        clearHighlights();
     }
 }
 
@@ -73,8 +214,23 @@ function renderBoard(board) {
                 square.appendChild(pieceElement);
             }
 
+            // Add click handler
+            square.addEventListener('click', handleSquareClick);
+
             chessBoard.appendChild(square);
         }
+    }
+
+    // Restore highlights if piece is selected
+    if (selectedSquare) {
+        const selectedPos = notationToPosition(selectedSquare);
+        const selectedElement = document.querySelector(`[data-row="${selectedPos.row}"][data-col="${selectedPos.col}"]`);
+        if (selectedElement) {
+            selectedElement.classList.add('selected');
+        }
+
+        // Restore possible move highlights
+        highlightPossibleMoves(possibleMoves);
     }
 }
 
@@ -125,6 +281,105 @@ function updateGameUI(game, user) {
     renderBoard(game.board);
 }
 
+// Connect to WebSocket
+function connectWebSocket() {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}/ws`;
+
+    console.log('Connecting to WebSocket:', wsUrl);
+    websocket = new WebSocket(wsUrl);
+
+    websocket.onopen = () => {
+        console.log('WebSocket connected');
+        // Send connect message
+        websocket.send(JSON.stringify({
+            type: 'CONNECT',
+            userId: currentUser.userId,
+            userName: currentUser.userName
+        }));
+    };
+
+    websocket.onmessage = (event) => {
+        console.log('WebSocket message received:', event.data);
+        const message = JSON.parse(event.data);
+        handleWebSocketMessage(message);
+    };
+
+    websocket.onerror = (error) => {
+        console.error('WebSocket error:', error);
+    };
+
+    websocket.onclose = () => {
+        console.log('WebSocket closed, reconnecting in 3s...');
+        setTimeout(connectWebSocket, 3000);
+    };
+}
+
+// Handle WebSocket messages
+function handleWebSocketMessage(message) {
+    switch (message.type) {
+        case 'CONNECTED':
+            console.log('Connected to WebSocket as', message.userName);
+            break;
+
+        case 'GAME_UPDATE':
+            console.log('Game update received via WebSocket:', message);
+
+            // Only update if it's for the current game
+            if (message.gameId === gameId) {
+                console.log('Updating game board:', message.game);
+                gameData = message.game;
+                updateGameUI(gameData, currentUser);
+
+                // Show notification if it's now player's turn
+                const playerRole = getPlayerRole(gameData, currentUser.userId);
+                const isPlayerTurn =
+                    (playerRole === 'white' && gameData.currentTurn === 'WHITE') ||
+                    (playerRole === 'black' && gameData.currentTurn === 'BLACK');
+
+                if (isPlayerTurn) {
+                    showTurnNotification();
+                }
+            } else {
+                console.log('Ignoring game update for different game:', message.gameId);
+            }
+            break;
+
+        case 'PONG':
+            // Heartbeat response
+            break;
+
+        default:
+            console.log('Unknown WebSocket message type:', message.type);
+    }
+}
+
+// Show notification that it's player's turn
+function showTurnNotification() {
+    // Flash the current move indicator
+    const currentMoveElement = document.getElementById('currentMove');
+    if (currentMoveElement) {
+        currentMoveElement.style.transition = 'all 0.3s ease';
+        currentMoveElement.style.transform = 'scale(1.2)';
+        currentMoveElement.style.fontWeight = '900';
+        currentMoveElement.style.color = '#10b981';
+
+        setTimeout(() => {
+            currentMoveElement.style.transform = 'scale(1)';
+            currentMoveElement.style.fontWeight = '700';
+            currentMoveElement.style.color = '#1a202c';
+        }, 500);
+    }
+
+    // Optional: Show browser notification
+    if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Chess Game', {
+            body: 'It\'s your turn!',
+            icon: '/favicon.ico'
+        });
+    }
+}
+
 // Initialize game
 async function initGame() {
     console.log('Initializing game...');
@@ -153,6 +408,14 @@ async function initGame() {
 
     // Update UI
     updateGameUI(gameData, currentUser);
+
+    // Connect to WebSocket for real-time updates
+    connectWebSocket();
+
+    // Request notification permission
+    if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+    }
 }
 
 // Initialize on page load
