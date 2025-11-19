@@ -41,7 +41,13 @@ async function fetchGame(gameId) {
 // Render chess board
 function renderBoard(board) {
     const chessBoard = document.getElementById('chessBoard');
+    if (!chessBoard) {
+        console.error('Chess board element not found');
+        return;
+    }
+
     chessBoard.innerHTML = '';
+    console.log('Rendering board with data:', board);
 
     // Create board squares
     for (let row = 0; row < 8; row++) {
@@ -71,6 +77,7 @@ function renderBoard(board) {
         }
     }
 }
+
 
 // Get piece unicode symbol
 function getPieceSymbol(piece) {
@@ -120,6 +127,8 @@ function updateGameUI(game, user) {
 
 // Initialize game
 async function initGame() {
+    console.log('Initializing game...');
+
     // Get game ID from URL
     gameId = getGameIdFromUrl();
     if (!gameId) {
