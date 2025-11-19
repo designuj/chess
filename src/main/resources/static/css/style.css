@@ -1,3 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+/* ======================
+   Global Styles
+   ====================== */
 * {
     margin: 0;
     padding: 0;
@@ -5,7 +10,7 @@
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #1a202c;
     line-height: 1.6;
@@ -27,16 +32,460 @@ body::before {
     z-index: 0;
 }
 
-/* Common Components */
+/* ======================
+   Common Components
+   ====================== */
 .container {
+    position: relative;
+    z-index: 1;
+}
+
+/* ======================
+   Index Page Styles
+   ====================== */
+body.index-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+body.index-page .container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 48px;
+    max-width: 460px;
+    width: 100%;
+    box-shadow:
+        0 20px 25px -5px rgba(0, 0, 0, 0.3),
+        0 10px 10px -5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    opacity: 1;
+    transform: scale(1);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+}
+
+.header p {
+    color: #6b7280;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.form-group {
+    margin-bottom: 32px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: 'Space Grotesk', sans-serif;
+    transition: all 0.3s ease;
+    background: #ffffff;
+    color: #1f2937;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.form-group input::placeholder {
+    color: #9ca3af;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(102, 126, 234, 0.3);
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(102, 126, 234, 0.4);
+}
+
+.btn-submit:active {
+    transform: translateY(0);
+}
+
+.chess-icon {
+    font-size: 64px;
+    text-align: center;
+    margin-bottom: 24px;
+    opacity: 0.9;
+}
+
+/* User List Styles */
+.user-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.current-user-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.user-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.current-user-info h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0;
+}
+
+.user-status {
+    font-size: 13px;
+    color: #10b981;
+    font-weight: 600;
+    margin: 0;
+}
+
+.btn-logout {
+    padding: 8px 16px;
+    background: #ffffff;
+    color: #667eea;
+    border: 2px solid #667eea;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);
+}
+
+.section-divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.3), transparent);
+    margin: 24px 0;
+}
+
+.users-section {
+    margin-top: 24px;
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 16px;
+}
+
+.users-grid {
+    display: grid;
+    gap: 12px;
+}
+
+.user-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.user-card:hover:not(.disabled) {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-color: rgba(102, 126, 234, 0.4);
+    transform: translateX(4px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.user-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.user-card-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-card.disabled .user-card-avatar {
+    background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+}
+
+.user-card-info h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0 0 4px 0;
+}
+
+.status-badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.status-badge.online {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+}
+
+.status-badge.in-game {
+    background: rgba(156, 163, 175, 0.1);
+    color: #6b7280;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+}
+
+.modal {
+    background: white;
+    border-radius: 20px;
+    padding: 32px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.show .modal {
+    transform: scale(1);
+}
+
+.modal-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.modal-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.modal-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 8px;
+}
+
+.modal-header p {
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.modal-btn {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(102, 126, 234, 0.3);
+}
+
+.modal-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(102, 126, 234, 0.4);
+}
+
+.modal-btn-secondary {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.modal-btn-secondary:hover {
+    background: #e5e7eb;
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border-radius: 16px;
+    padding: 20px 24px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+    z-index: 2000;
+    min-width: 300px;
+    max-width: 400px;
+    transform: translateX(500px);
+    transition: transform 0.3s ease;
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.notification-icon {
+    font-size: 32px;
+}
+
+.notification-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0;
+}
+
+.notification-message {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+
+.notification-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.notification-btn {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.notification-btn-accept {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.notification-btn-accept:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+}
+
+.notification-btn-decline {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.notification-btn-decline:hover {
+    background: #e5e7eb;
+}
+
+/* ======================
+   Game Page Styles
+   ====================== */
+body.game-page .container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 32px 24px;
     display: grid;
     gap: 24px;
     grid-template-columns: 1fr;
-    position: relative;
-    z-index: 1;
 }
 
 /* Chess Board Styles */
@@ -44,34 +493,53 @@ body::before {
     display: flex;
     justify-content: center;
     align-items: center;
+    perspective: 1000px;
+    padding: 20px;
 }
 
 .chess-board {
     display: grid;
     grid-template-columns: repeat(8, 1fr);
-    border-radius: 16px;
-    overflow: hidden;
-    background: #ffffff;
-    box-shadow:
-        0 20px 25px -5px rgba(0, 0, 0, 0.3),
-        0 10px 10px -5px rgba(0, 0, 0, 0.2),
-        0 0 0 1px rgba(0, 0, 0, 0.05);
-    width: min(90vw, 65vh, 600px);
-    height: min(90vw, 65vh, 600px);
+    grid-template-rows: repeat(8, 1fr);
+    gap: 0;
+    width: 560px;
+    height: 560px;
+    max-width: 90vw;
+    max-height: 90vw;
+    aspect-ratio: 1 / 1;
     position: relative;
+    border: 16px solid #2a2a2a;
+    border-radius: 8px;
+    background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+    box-shadow:
+        0 30px 60px -12px rgba(0, 0, 0, 0.5),
+        0 18px 36px -18px rgba(0, 0, 0, 0.4);
 }
 
 .chess-board::before {
     content: '';
     position: absolute;
-    top: -4px;
-    left: -4px;
-    right: -4px;
-    bottom: -4px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 18px;
+    top: -24px;
+    left: -24px;
+    right: -24px;
+    bottom: -24px;
+    background: linear-gradient(145deg, #4a4a4a, #1a1a1a);
+    border-radius: 12px;
     z-index: -1;
-    opacity: 0.5;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.chess-board::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 0;
 }
 
 .square {
@@ -79,23 +547,92 @@ body::before {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: calc(min(90vw, 65vh, 600px) / 11);
-    transition: all 0.2s ease;
+    font-size: clamp(24px, 5vw, 54px);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     user-select: none;
     position: relative;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.square::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.square:hover::before {
+    opacity: 1;
 }
 
 .square.light {
-    background: #f0d9b5;
+    background: linear-gradient(145deg, #f0d9b5, #ecdab9);
 }
 
 .square.dark {
-    background: #b58863;
+    background: linear-gradient(145deg, #b58863, #a87d5a);
 }
 
 .square:hover {
-    filter: brightness(0.95);
-    transform: scale(0.98);
+    transform: translateY(-2px);
+    box-shadow:
+        inset 0 1px 3px rgba(0, 0, 0, 0.15),
+        0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.square:active {
+    transform: translateY(0);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.piece {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: grab;
+}
+
+.piece:active {
+    cursor: grabbing;
+    transform: scale(1.1);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+}
+
+.square.selected {
+    background: linear-gradient(145deg, #f7ec8e, #f5e77d) !important;
+    box-shadow:
+        inset 0 0 0 3px rgba(255, 215, 0, 0.6),
+        0 0 20px rgba(255, 215, 0, 0.3);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow:
+            inset 0 0 0 3px rgba(255, 215, 0, 0.6),
+            0 0 20px rgba(255, 215, 0, 0.3);
+    }
+    50% {
+        box-shadow:
+            inset 0 0 0 3px rgba(255, 215, 0, 0.8),
+            0 0 30px rgba(255, 215, 0, 0.5);
+    }
+}
+
+.square.valid-move {
+    position: relative;
+}
+
+.square.valid-move::after {
+    content: '';
+    position: absolute;
+    width: 30%;
+    height: 30%;
+    background: radial-gradient(circle, rgba(76, 175, 80, 0.6), rgba(76, 175, 80, 0.3));
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.4);
 }
 
 /* Sidebar Styles */
@@ -195,15 +732,55 @@ body::before {
     color: #1a202c;
 }
 
-/* Responsive Design */
+/* ======================
+   Responsive Design
+   ====================== */
+
+/* Index Page Responsive */
+@media (max-width: 480px) {
+    body.index-page .container {
+        padding: 32px 24px;
+    }
+
+    .header h1 {
+        font-size: 28px;
+    }
+
+    .chess-icon {
+        font-size: 48px;
+    }
+
+    .user-list-header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+    }
+
+    .btn-logout {
+        width: 100%;
+    }
+
+    .notification {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        min-width: auto;
+    }
+
+    .modal {
+        padding: 24px;
+    }
+}
+
+/* Game Page Responsive */
 @media (min-width: 1024px) {
-    .container {
+    body.game-page .container {
         grid-template-columns: 1fr 380px;
     }
 }
 
 @media (max-width: 1023px) {
-    .container {
+    body.game-page .container {
         grid-template-columns: 1fr;
     }
 
@@ -217,13 +794,13 @@ body::before {
 }
 
 @media (max-width: 768px) {
-    .container {
+    body.game-page .container {
         padding: 16px;
         gap: 16px;
     }
 
     .chess-board {
-        width: min(95vw, 95vw, 420px);
-        height: min(95vw, 95vw, 420px);
+        width: min(95vw, 420px);
+        height: min(95vw, 420px);
     }
 }

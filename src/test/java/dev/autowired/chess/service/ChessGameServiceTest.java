@@ -134,8 +134,8 @@ class ChessGameServiceTest {
                 .assertNext(game -> {
                     assertThat(game.getId()).isEqualTo("test-game-123");
                     assertThat(game.getMoves()).hasSize(1);
-                    assertThat(game.getMoves().get(0).getFrom()).isEqualTo("e2");
-                    assertThat(game.getMoves().get(0).getTo()).isEqualTo("e4");
+                    assertThat(game.getMoves().get(0).from()).isEqualTo("e2");
+                    assertThat(game.getMoves().get(0).to()).isEqualTo("e4");
                     assertThat(game.getCurrentTurn()).isEqualTo("BLACK");
                 })
                 .verifyComplete();

@@ -53,7 +53,7 @@ class ChessEngine {
         board[fromPos[0]][fromPos[1]] = null;
 
         // Record move
-        Move move = new Move(from, to, piece, playerColor);
+        Move move = new Move(from, to, piece, playerColor, System.currentTimeMillis());
         game.addMove(move);
         game.switchTurn();
 
