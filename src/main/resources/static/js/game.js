@@ -345,6 +345,15 @@ function handleWebSocketMessage(message) {
             }
             break;
 
+        case 'GAME_OVER':
+            console.log('Game over received via WebSocket:', message);
+
+            // Only handle if it's for the current game
+            if (message.gameId === gameId) {
+                showGameOverModal(message.winnerName, message.reason);
+            }
+            break;
+
         case 'PONG':
             // Heartbeat response
             break;
@@ -378,6 +387,50 @@ function showTurnNotification() {
             icon: '/favicon.ico'
         });
     }
+}
+
+// Handle Give Up button click
+async function handleGiveUp() {
+    if (!confirm('Are you sure you want to give up? The other player will win.')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/games/${gameId}/give-up?playerId=${currentUser.userId}`, {
+            method: 'DELETE'
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to give up');
+        }
+
+        console.log('Successfully gave up the game');
+    } catch (error) {
+        console.error('Error giving up:', error);
+        alert('Failed to give up the game');
+    }
+}
+
+// Show game over modal
+function showGameOverModal(winnerName, reason) {
+    const modal = document.getElementById('gameOverModal');
+    const title = document.getElementById('gameOverTitle');
+    const message = document.getElementById('gameOverMessage');
+
+    title.textContent = 'Game Over';
+
+    if (reason === 'give_up') {
+        message.textContent = `${winnerName} wins! Opponent gave up.`;
+    } else {
+        message.textContent = `${winnerName} wins!`;
+    }
+
+    modal.classList.add('show');
+}
+
+// Handle back to home button
+function handleBackToHome() {
+    window.location.href = '/';
 }
 
 // Initialize game
@@ -415,6 +468,18 @@ async function initGame() {
     // Request notification permission
     if ('Notification' in window && Notification.permission === 'default') {
         Notification.requestPermission();
+    }
+
+    // Add Give Up button event listener
+    const giveUpBtn = document.getElementById('giveUpBtn');
+    if (giveUpBtn) {
+        giveUpBtn.addEventListener('click', handleGiveUp);
+    }
+
+    // Add Back to Home button event listener
+    const backToHomeBtn = document.getElementById('backToHomeBtn');
+    if (backToHomeBtn) {
+        backToHomeBtn.addEventListener('click', handleBackToHome);
     }
 }
 

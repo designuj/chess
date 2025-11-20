@@ -20,6 +20,7 @@ class GameController {
     @GetMapping("/{gameId}")
     Mono<Game> getGame(@PathVariable String gameId) {
         log.info("Fetching game: {}", gameId);
+
         return chessGameService.getGame(gameId);
     }
 
@@ -29,16 +30,36 @@ class GameController {
             @RequestParam String from,
             @RequestParam String playerId) {
         log.info("Fetching possible moves for game {}, from {}, player {}", gameId, from, playerId);
+
         return chessGameService.getPossibleMoves(gameId, from, playerId);
     }
 
     @PostMapping("/{gameId}/move")
-    Mono<Game> makeMove(
-            @PathVariable String gameId,
-            @RequestBody MoveRequest request) {
+    Mono<Game> makeMove(@PathVariable String gameId, @RequestBody MoveRequest request) {
         log.info("Making move in game {}: {} to {}", gameId, request.from(), request.to());
+
         return chessGameService.makeMove(gameId, request.playerId(), request.from(), request.to())
-                .doOnSuccess(game -> webSocketHandler.broadcastGameUpdate(game));
+                .doOnSuccess(webSocketHandler::broadcastGameUpdate);
+    }
+
+    @DeleteMapping("/{gameId}/give-up")
+    Mono<Void> giveUp(
+            @PathVariable String gameId,
+            @RequestParam String playerId) {
+        log.info("Player {} giving up game {}", playerId, gameId);
+
+        return chessGameService.getGame(gameId)
+                .flatMap(game -> {
+                    // Determine winner (opponent of player who gave up)
+                    String winnerName = playerId.equals(game.getWhitePlayerId()) ?
+                            game.getBlackPlayerName() : game.getWhitePlayerName();
+
+                    // Notify both players about game over
+                    webSocketHandler.broadcastGameOver(game, winnerName, "give_up");
+
+                    // Delete the game
+                    return chessGameService.deleteGame(gameId);
+                });
     }
 
     record MoveRequest(String playerId, String from, String to) {}

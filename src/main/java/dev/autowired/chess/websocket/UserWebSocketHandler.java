@@ -305,4 +305,22 @@ public class UserWebSocketHandler implements WebSocketHandler {
 
         log.info("Finished broadcasting game update");
     }
+
+    /**
+     * Broadcast game over to both players
+     */
+    public void broadcastGameOver(dev.autowired.chess.model.Game game, String winnerName, String reason) {
+        log.info("Broadcasting game over for game: {} - Winner: {}, Reason: {}", game.getId(), winnerName, reason);
+
+        Map<String, Object> message = new HashMap<>();
+        message.put("type", "GAME_OVER");
+        message.put("gameId", game.getId());
+        message.put("winnerName", winnerName);
+        message.put("reason", reason);
+
+        sendToUser(game.getWhitePlayerId(), message);
+        sendToUser(game.getBlackPlayerId(), message);
+
+        log.info("Finished broadcasting game over");
+    }
 }
