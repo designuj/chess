@@ -30,7 +30,7 @@ function saveUserData(name) {
 // WebSocket Functions
 function connectWebSocket(userData) {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws/users`;
+    const wsUrl = `${protocol}//${window.location.host}/ws`;
 
     console.log('Connecting to WebSocket:', wsUrl);
 
@@ -154,7 +154,7 @@ function updateUserList(users) {
 
     usersGrid.innerHTML = otherUsers.map(user => `
         <div class="user-card" onclick="selectUser('${user.userId}')">
-            <div class="user-card-avatar">♟️</div>
+            <div class="user-card-avatar"><i class="fa-solid fa-chess-pawn"></i></div>
             <div class="user-card-info">
                 <h4>${user.userName}</h4>
                 <span class="status-badge online">Available</span>
@@ -170,7 +170,7 @@ function showUserList(currentUser) {
     container.innerHTML = `
         <div class="user-list-header">
             <div class="current-user-info">
-                <div class="user-avatar">👤</div>
+                <div class="user-avatar"><i class="fa-solid fa-chess-queen"></i></div>
                 <div>
                     <h2>${currentUser.userName}</h2>
                     <p class="user-status">Ready to play</p>
@@ -248,7 +248,7 @@ function showConfirmationModal(toUserId, toUserName) {
         <div class="modal-overlay" id="confirmModal">
             <div class="modal">
                 <div class="modal-header">
-                    <div class="modal-icon">♔</div>
+                    <div class="modal-icon"><i class="fa-solid fa-chess-king"></i></div>
                     <h3>Send Game Invitation</h3>
                     <p>Do you want to send a game invitation to <strong>${toUserName}</strong>?</p>
                 </div>
@@ -310,7 +310,7 @@ function showInvitationNotification(fromUserId, fromUserName) {
     const notificationHtml = `
         <div class="notification" id="invitationNotification">
             <div class="notification-header">
-                <div class="notification-icon">♔</div>
+                <div class="notification-icon"><i class="fa-solid fa-chess-king"></i></div>
                 <h4 class="notification-title">Game Invitation</h4>
             </div>
             <p class="notification-message">

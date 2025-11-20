@@ -210,7 +210,7 @@ function renderBoard(board) {
             if (piece) {
                 const pieceElement = document.createElement('div');
                 pieceElement.className = 'piece';
-                pieceElement.textContent = getPieceSymbol(piece);
+                pieceElement.innerHTML = getPieceIcon(piece);
                 square.appendChild(pieceElement);
             }
 
@@ -235,13 +235,23 @@ function renderBoard(board) {
 }
 
 
-// Get piece unicode symbol
-function getPieceSymbol(piece) {
-    const symbols = {
-        'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
-        'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
+// Get piece Font Awesome icon
+function getPieceIcon(piece) {
+    const icons = {
+        'K': '<i class="fa-regular fa-chess-king"></i>',
+        'Q': '<i class="fa-regular fa-chess-queen"></i>',
+        'R': '<i class="fa-regular fa-chess-rook"></i>',
+        'B': '<i class="fa-regular fa-chess-bishop"></i>',
+        'N': '<i class="fa-regular fa-chess-knight"></i>',
+        'P': '<i class="fa-regular fa-chess-pawn"></i>',
+        'k': '<i class="fa-solid fa-chess-king"></i>',
+        'q': '<i class="fa-solid fa-chess-queen"></i>',
+        'r': '<i class="fa-solid fa-chess-rook"></i>',
+        'b': '<i class="fa-solid fa-chess-bishop"></i>',
+        'n': '<i class="fa-solid fa-chess-knight"></i>',
+        'p': '<i class="fa-solid fa-chess-pawn"></i>'
     };
-    return symbols[piece] || piece;
+    return icons[piece] || '';
 }
 
 // Determine player role
@@ -264,10 +274,10 @@ function updateGameUI(game, user) {
     // Update role
     if (playerRole === 'white') {
         document.getElementById('playerRole').textContent = game.whitePlayerName;
-        document.getElementById('playingAs').textContent = 'White ♔';
+        document.getElementById('playingAs').innerHTML = 'White <i class="fa-regular fa-chess-king"></i>';
     } else if (playerRole === 'black') {
         document.getElementById('playerRole').textContent = game.blackPlayerName;
-        document.getElementById('playingAs').textContent = 'Black ♚';
+        document.getElementById('playingAs').innerHTML = 'Black <i class="fa-solid fa-chess-king"></i>';
     } else {
         document.getElementById('playerRole').textContent = 'Spectator';
         document.getElementById('playingAs').textContent = 'Watching';
